@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { postAdded } from "./postSlice";
+import { addNewPost } from "./postSlice";
 import { selectAllUsers } from "../users/usersSlice";
 
 const AddPostForm = () => {
@@ -11,6 +11,7 @@ const AddPostForm = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [userId, setUserId] = useState("");
+  const [addRequestStatus, setAddRequestStatus] = useState("idle");
 
   // get users from global state
   const users = useSelector(selectAllUsers);
@@ -20,21 +21,36 @@ const AddPostForm = () => {
   const onAuthorChanged = (e) => setUserId(e.target.value);
   //   const onAuthurNameChanged = (e) => setName(e.target.value);
 
+  const canSave =
+    [title, content, userId].every(Boolean) && addRequestStatus === "idle";
+
   const onSavePostClicked = () => {
-    if (title && content) {
-      // simplify the payload in component
-      // handle the payload object in global state - postSlice.js
-      // so that we don't have to handle the payload structure in the component
-      // we can send a raw data if we want to
-      dispatch(postAdded(title, content, userId));
+    if (canSave) {
+      try {
+        setAddRequestStatus("pending");
+        dispatch(addNewPost({ title, body: content, userId })).unwrap();
 
-      //   dispatch(postAdded(title, content, userId));
-      setTitle("");
-      setContent("");
+        setTitle("");
+        setContent("");
+        setUserId("");
+      } catch (err) {
+        console.error("Failed to save the post", err);
+      } finally {
+        setAddRequestStatus("idle");
+      }
     }
-  };
 
-  const canSave = Boolean(title) && Boolean(content) && Boolean(userId);
+    // if (title && content) {
+    // simplify the payload in component
+    // handle the payload object in global state - postSlice.js
+    // so that we don't have to handle the payload structure in the component
+    // we can send a raw data if we want to
+    // dispatch(postAdded(title, content, userId));
+    // dispatch(postAdded(title, content, userId));
+    // setTitle("");
+    // setContent("");
+    // }
+  };
 
   console.log("users", users);
 

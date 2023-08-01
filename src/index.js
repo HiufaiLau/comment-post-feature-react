@@ -4,6 +4,10 @@ import "./index.css";
 import App from "./App";
 import { store } from "./app/store";
 import { Provider } from "react-redux";
+import { fetchUsers } from "./features/users/usersSlice";
+
+// to load the user right after the app is loaded
+store.dispatch(fetchUsers());
 
 ReactDOM.render(
   <React.StrictMode>
