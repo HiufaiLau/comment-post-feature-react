@@ -35,6 +35,7 @@ const AddPostForm = () => {
   };
 
   const canSave = Boolean(title) && Boolean(content) && Boolean(userId);
+
   console.log("users", users);
 
   const usersOptions = users.map((user) => (
