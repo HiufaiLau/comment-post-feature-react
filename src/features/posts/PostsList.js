@@ -1,19 +1,26 @@
 import { useSelector } from "react-redux";
 import { selectAllPosts } from "./postSlice";
 import PostAuthor from "./PostAuthor";
-
-import React from "react";
+import TimeAgo from "./TimeAgo";
 
 const PostsList = () => {
   const posts = useSelector(selectAllPosts);
 
-  const renderedPosts = posts.map((post) => (
+  // added a sort function to sort the posts by date
+  // use slice to create an array copy
+  const orderedPosts = posts
+    .slice()
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  const renderedPosts = orderedPosts.map((post) => (
     <article key={post.id}>
       <h3>{post.title}</h3>
       {/* using substring to limit the length of the content */}
       <p>{post.content.substring(0, 100)}</p>
       <p className='postCredit'>
+        {/* this is a prop to pass the userId to PostAuthor component */}
         <PostAuthor userId={post.userId} />
+        <TimeAgo timestamp={post.date} />
       </p>
     </article>
   ));
