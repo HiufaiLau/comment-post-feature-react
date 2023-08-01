@@ -54,12 +54,13 @@ const postSlice = createSlice({
       // add callback function to prepare the payload object for the reducer function
       // this is where we can add the id property to the payload object
       // instead of handle the payload structure in the component
-      prepare(title, content) {
+      prepare(title, content, userId) {
         return {
           payload: {
             id: nanoid(),
             title,
             content,
+            userId,
           },
         };
       },
@@ -67,6 +68,7 @@ const postSlice = createSlice({
   },
 });
 
+//selector function
 export const selectAllPosts = (state) => state.posts;
 
 export const { postAdded } = postSlice.actions;
