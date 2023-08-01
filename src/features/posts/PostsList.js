@@ -23,9 +23,8 @@ const PostsList = () => {
         <PostAuthor userId={post.userId} />
         <TimeAgo timestamp={post.date} />
       </p>
-      <p>
-        <ReactionButtons post={post} />
-      </p>
+
+      <ReactionButtons post={post} />
     </article>
   ));
 
