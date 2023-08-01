@@ -4,6 +4,7 @@ import axios from "axios";
 
 const POSTS_URL = "https://jsonplaceholder.typicode.com/posts";
 
+// step 1 initialState
 const initialState = {
   posts: [],
   status: "idle", //'idle' | 'loading' | 'succeeded' | 'failed'
@@ -23,14 +24,20 @@ export const addNewPost = createAsyncThunk(
   }
 );
 
+// step 2 createSlice
 const postsSlice = createSlice({
   name: "posts",
   initialState,
   reducers: {
+    // send a proper formated object
     postAdded: {
       reducer(state, action) {
         state.posts.push(action.payload);
       },
+
+      // add callback function to prepare the payload object for the reducer function
+      // this is where we can add the id property to the payload object
+      // instead of handle the payload structure in the component
       prepare(title, content, userId) {
         return {
           payload: {
@@ -52,8 +59,11 @@ const postsSlice = createSlice({
     },
     reactionAdded(state, action) {
       const { postId, reaction } = action.payload;
+      // find the post by id
       const existingPost = state.posts.find((post) => post.id === postId);
+      // if the post exist, add the reaction
       if (existingPost) {
+        // only with createSlice
         existingPost.reactions[reaction]++;
       }
     },
@@ -121,108 +131,3 @@ export const getPostsError = (state) => state.posts.error;
 export const { postAdded, reactionAdded } = postsSlice.actions;
 
 export default postsSlice.reducer;
-// import { createSlice, nanoid, createAsyncThunk } from "@reduxjs/toolkit";
-// import { sub } from "date-fns";
-// import axios from "axios";
-// // Based on immerjs
-
-// const POSTS_URL = "https://jsonplaceholder.typicode.com/posts";
-
-// // step 1 initialState
-// const initialState = {
-//   posts: [],
-//   status: "idle", //'idle' | 'loading' | 'succeeded' | 'failed'
-//   error: null,
-// };
-
-// // use createAsyncThunk to handle async action and axios request to get data
-// export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
-//   const response = await axios.get(POSTS_URL);
-//   console.log(response.data);
-//   return response.data;
-// });
-
-// // step 2 createSlice
-// const postSlice = createSlice({
-//   name: "posts",
-//   initialState,
-//   reducers: {
-//     // send a properlx formated object
-//     postAdded: {
-//       reducer(state, action) {
-//         // only with createSlice
-//         state.posts.push(action.payload);
-//       },
-//       // add callback function to prepare the payload object for the reducer function
-//       // this is where we can add the id property to the payload object
-//       // instead of handle the payload structure in the component
-//       prepare(title, content, userId) {
-//         return {
-//           payload: {
-//             id: nanoid(),
-//             title,
-//             content,
-//             date: new Date().toISOString(),
-//             userId,
-//             reactions: {
-//               thumbsUp: 0,
-//               wow: 0,
-//               heart: 0,
-//               rocket: 0,
-//               coffee: 0,
-//             },
-//           },
-//         };
-//       },
-//     },
-//     reactionAdded(state, action) {
-//       const { postId, reaction } = action.payload;
-//       // find the post by id
-//       const existingPost = state.posts.find((post) => post.id === postId);
-//       // if the post exist, add the reaction
-//       if (existingPost) {
-//         // only with createSlice
-//         existingPost.reactions[reaction]++;
-//       }
-//     },
-//     extraReducers(builder) {
-//       // like switch case statement
-//       builder
-//         .addCase(fetchPosts.pending, (state, action) => {
-//           state.status = "loading";
-//         })
-//         .addCase(fetchPosts.fulfilled, (state, action) => {
-//           state.status = "succeeded";
-//           // Adding date and reactions
-//           let min = 1;
-//           const loadedPosts = action.payload.map((post) => {
-//             post.date = sub(new Date(), { minutes: min++ }).toISOString();
-//             post.reactions = {
-//               thumbsUp: 0,
-//               wow: 0,
-//               heart: 0,
-//               rocket: 0,
-//               coffee: 0,
-//             };
-//             return post;
-//           });
-
-//           // Add any fetched posts to the array
-//           state.posts = state.posts.concat(loadedPosts);
-//         })
-//         .addCase(fetchPosts.rejected, (state, action) => {
-//           state.status = "failed";
-//           state.error = action.error.message;
-//         });
-//     },
-//   },
-// });
-
-// //selector function
-// export const selectAllPosts = (state) => state.posts.posts;
-// export const getPostStatus = (state) => state.posts.status;
-// export const getPostError = (state) => state.posts.error;
-
-// export const { postAdded, reactionAdded } = postSlice.actions;
-
-// export default postSlice.reducer;
